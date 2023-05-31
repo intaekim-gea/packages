@@ -24,12 +24,12 @@ flutter:
 dependencies:
   # camera_android: ^0.10.7  
   # camera_android:
-  #   git:
-  #     url: https://github.com/intaekim-gea/packages.git
-  #     path: packages/camera/camera_android
-  #     ref: f1f0fa0
+  #   path: ../camera_android
   camera_android:
-    path: ../camera_android
+    git:
+      url: https://github.com/intaekim-gea/packages.git
+      path: packages/camera/camera_android
+      ref: 97a5f28
 
   camera_avfoundation: ^0.9.13
   camera_platform_interface: ^2.5.0
