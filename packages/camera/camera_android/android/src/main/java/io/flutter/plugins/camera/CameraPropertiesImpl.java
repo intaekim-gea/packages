@@ -4,10 +4,12 @@
 
 package io.flutter.plugins.camera;
 
+import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraManager;
+import android.media.MediaRecorder;
 import android.os.Build.VERSION_CODES;
 import android.util.Range;
 import android.util.Rational;
@@ -15,6 +17,8 @@ import android.util.Size;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+
+import java.util.Arrays;
 
 /**
  * Implementation of the @see CameraProperties interface using the @see
@@ -163,5 +167,24 @@ public class CameraPropertiesImpl implements CameraProperties {
   public int[] getAvailableNoiseReductionModes() {
     return cameraCharacteristics.get(
         CameraCharacteristics.NOISE_REDUCTION_AVAILABLE_NOISE_REDUCTION_MODES);
+  }
+
+	// Intae
+  @Override
+  public Size getVideoSize() {
+    Size[] sizes = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+            .getOutputSizes(MediaRecorder.class);
+
+    Arrays.sort(sizes, (lhs, rhs) -> rhs.getWidth()*rhs.getHeight() - lhs.getWidth()*lhs.getHeight());
+    return sizes.length == 0 ? null : sizes[0];
+  }
+
+  @Override
+  public Size getPreviewSize() {
+    Size[] sizes = cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP)
+            .getOutputSizes(ImageFormat.JPEG);
+
+    Arrays.sort(sizes, (lhs, rhs) -> rhs.getWidth()*rhs.getHeight() - lhs.getWidth()*lhs.getHeight());
+    return sizes.length == 0 ? null : sizes[0];
   }
 }

@@ -273,4 +273,8 @@ public interface CameraProperties {
    */
   @NonNull
   int[] getAvailableNoiseReductionModes();
+  
+  // Intae
+  Size getVideoSize();
+  Size getPreviewSize();
 }

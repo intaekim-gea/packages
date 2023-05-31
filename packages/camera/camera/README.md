@@ -1,3 +1,13 @@
+# How to install
+```
+dependency:
+  camera:
+    git:
+      url: https://github.com/intaekim-gea/packages.git
+      path: packages/camera/camera
+      ref: f1f0fa0
+```
+
 # Camera Plugin
 
 <?code-excerpt path-base="excerpts/packages/camera_example"?>
