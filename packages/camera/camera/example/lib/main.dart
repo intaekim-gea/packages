@@ -677,6 +677,15 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             .getMinZoomLevel()
             .then((double value) => _minAvailableZoom = value),
       ]);
+
+      if (cameraController.value.isStreamingImages) {
+        await cameraController.stopImageStream();
+      }
+      unawaited(cameraController.startImageStream((CameraImage image) {
+        final ImageFormat format = image.format;
+        final MemoryImage memoryImage = MemoryImage(image.planes.first.bytes);
+        debugPrint('OnAvailable Image');
+      }));
     } on CameraException catch (e) {
       switch (e.code) {
         case 'CameraAccessDenied':
