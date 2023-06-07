@@ -5,7 +5,7 @@ dependency:
     git:
       url: https://github.com/intaekim-gea/packages.git
       path: packages/camera/camera
-      ref: 97a5f28
+      ref: 659d14b
 ```
 
 # Camera Plugin
