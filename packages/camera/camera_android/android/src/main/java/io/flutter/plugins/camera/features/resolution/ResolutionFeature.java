@@ -270,20 +270,6 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     }
     boolean captureSizeCalculated = false;
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      recordingProfileLegacy = null;
-      recordingProfile =
-          getBestAvailableCamcorderProfileForResolutionPreset(cameraId, resolutionPreset);
-      List<EncoderProfiles.VideoProfile> videoProfiles = recordingProfile.getVideoProfiles();
-
-      EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
-
-      if (defaultVideoProfile != null) {
-        captureSizeCalculated = true;
-        captureSize = new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
-      }
-    }
-
     if (!captureSizeCalculated) {
       recordingProfile = null;
 
