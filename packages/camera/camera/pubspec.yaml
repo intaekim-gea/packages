@@ -29,7 +29,7 @@ dependencies:
     git:
       url: https://github.com/intaekim-gea/packages.git
       path: packages/camera/camera_android
-      ref: 659d14b
+      ref: 94f60c5
 
   camera_avfoundation: ^0.9.13
   camera_platform_interface: ^2.5.0
