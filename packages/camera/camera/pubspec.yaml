@@ -27,7 +27,7 @@ dependencies:
   #   path: ../camera_android
   camera_android:
     git:
-      url: https://github.com/intaekim-gea/packages.git
+      url: https://github.com/geappliances/flutter-packages.git
       path: packages/camera/camera_android
       ref: 94f60c5
 
