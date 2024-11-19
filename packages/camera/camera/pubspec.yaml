@@ -26,10 +26,7 @@ dependencies:
   # camera_android:
   #   path: ../camera_android
   camera_android:
-    git:
-      url: https://github.com/geappliances/flutter-packages.git
-      path: packages/camera/camera_android
-      ref: 94f60c5
+    path: ../camera_android
 
   camera_avfoundation: ^0.9.13
   camera_platform_interface: ^2.5.0

@@ -235,9 +235,9 @@ class Camera
    */
   void updateBuilderSettings(CaptureRequest.Builder requestBuilder) {
     for (CameraFeature<?> feature : cameraFeatures.getAllFeatures()) {
-      if (BuildConfig.DEBUG) {
-        Log.d(TAG, "Updating builder with feature: " + feature.getDebugName());
-      }
+      // if (BuildConfig.DEBUG) {
+      //   Log.d(TAG, "Updating builder with feature: " + feature.getDebugName());
+      // }
       feature.updateBuilder(requestBuilder);
     }
   }
@@ -331,9 +331,9 @@ class Camera
                     cameraFeatures.getFocusPoint().checkIsSupported());
               }
             } catch (Exception e) {
-              if (BuildConfig.DEBUG) {
-                Log.i(TAG, "open | onOpened error: " + e.getMessage());
-              }
+              // if (BuildConfig.DEBUG) {
+              //   Log.i(TAG, "open | onOpened error: " + e.getMessage());
+              // }
               dartMessenger.sendCameraErrorEvent(e.getMessage());
               close();
             }

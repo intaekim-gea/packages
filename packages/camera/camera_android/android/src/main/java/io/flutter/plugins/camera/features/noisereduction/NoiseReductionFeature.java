@@ -88,9 +88,9 @@ public class NoiseReductionFeature extends CameraFeature<NoiseReductionMode> {
       return;
     }
 
-    if (BuildConfig.DEBUG) {
-      Log.i("Camera", "updateNoiseReduction | currentSetting: " + currentSetting);
-    }
+    // if (BuildConfig.DEBUG) {
+    //   Log.i("Camera", "updateNoiseReduction | currentSetting: " + currentSetting);
+    // }
 
     // Always use fast mode.
     requestBuilder.set(
