@@ -14,7 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugins.camera.types.CameraCaptureProperties;
+
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -90,29 +93,66 @@ public class ImageStreamReader {
    * @param imageStreamSink is the image stream sink from dart as a dart {@link
    *     EventChannel.EventSink}
    */
+
+
+
+  LocalDateTime lastCaptureDate;
+  int framesPerSecond = 5;
+  int jpegQuality = 80;
+
   @VisibleForTesting
   public void onImageAvailable(
       @NonNull Image image,
       @NonNull CameraCaptureProperties captureProps,
       @NonNull EventChannel.EventSink imageStreamSink) {
     try {
-      Map<String, Object> imageBuffer = new HashMap<>();
-
-      // Get plane data ready
-      if (dartImageFormat == ImageFormat.NV21) {
-        imageBuffer.put("planes", parsePlanesForNv21(image));
+      if (lastCaptureDate == null) {
+        lastCaptureDate = LocalDateTime.now();
       } else {
-        imageBuffer.put("planes", parsePlanesForYuvOrJpeg(image));
+        LocalDateTime now = LocalDateTime.now();
+        long diff = java.time.Duration.between(lastCaptureDate, now).toMillis();
+        if (diff < 1000 / framesPerSecond) {
+          image.close();
+          return;
+        }
+        lastCaptureDate = now;
       }
 
+      Map<String, Object> imageBuffer = new HashMap<>();
+
+      byte[] jpegBytes = ImageConverter.convertToJpegBytes(image, jpegQuality);
+      List<Map<String, Object>> planes = new ArrayList<>();
+      Map<String, Object> planeBuffer = new HashMap<>();
+      planeBuffer.put("bytesPerRow", 0);
+      planeBuffer.put("bytesPerPixel", 0);
+      planeBuffer.put("bytes", jpegBytes);
+      planes.add(planeBuffer);
+
+      imageBuffer.put("planes", planes);
       imageBuffer.put("width", image.getWidth());
       imageBuffer.put("height", image.getHeight());
-      imageBuffer.put("format", dartImageFormat);
+      imageBuffer.put("format", ImageFormat.JPEG);
       imageBuffer.put("lensAperture", captureProps.getLastLensAperture());
       imageBuffer.put("sensorExposureTime", captureProps.getLastSensorExposureTime());
       Integer sensorSensitivity = captureProps.getLastSensorSensitivity();
       imageBuffer.put(
           "sensorSensitivity", sensorSensitivity == null ? null : (double) sensorSensitivity);
+
+      // Get plane data ready
+//      if (dartImageFormat == ImageFormat.NV21) {
+//        imageBuffer.put("planes", parsePlanesForNv21(image));
+//      } else {
+//        imageBuffer.put("planes", parsePlanesForYuvOrJpeg(image));
+//      }
+
+//      imageBuffer.put("width", image.getWidth());
+//      imageBuffer.put("height", image.getHeight());
+//      imageBuffer.put("format", dartImageFormat);
+//      imageBuffer.put("lensAperture", captureProps.getLastLensAperture());
+//      imageBuffer.put("sensorExposureTime", captureProps.getLastSensorExposureTime());
+//      Integer sensorSensitivity = captureProps.getLastSensorSensitivity();
+//      imageBuffer.put(
+//          "sensorSensitivity", sensorSensitivity == null ? null : (double) sensorSensitivity);
 
       final Handler handler = new Handler(Looper.getMainLooper());
       handler.post(() -> imageStreamSink.success(imageBuffer));
@@ -127,6 +167,8 @@ public class ImageStreamReader {
                   "IllegalStateException",
                   "Caught IllegalStateException: " + e.getMessage(),
                   null));
+      image.close();
+    } catch (IOException e) {
       image.close();
     }
   }
