@@ -161,7 +161,7 @@ public class ImageDetector {
 
         // Convert the YUV Mat to RGB
         Mat rgbMat = new Mat();
-        Imgproc.cvtColor(yuvMat, rgbMat, Imgproc.COLOR_YUV2BGR_NV21);
+        Imgproc.cvtColor(yuvMat, rgbMat, Imgproc.COLOR_YUV2RGB_NV21);
 
         yuvMat.release();
         return rgbMat;
