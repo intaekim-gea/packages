@@ -23,6 +23,7 @@ import io.flutter.plugins.camera.features.autofocus.FocusMode;
 import io.flutter.plugins.camera.features.exposurelock.ExposureMode;
 import io.flutter.plugins.camera.features.flash.FlashMode;
 import io.flutter.plugins.camera.features.resolution.ResolutionPreset;
+import io.flutter.plugins.camera.media.ImageDetector;
 import io.flutter.view.TextureRegistry;
 import java.util.HashMap;
 import java.util.Map;
@@ -265,6 +266,7 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
       case "stopImageStream":
         {
           try {
+            ImageDetector.resetAll();
             camera.startPreview();
             result.success(null);
           } catch (Exception e) {
