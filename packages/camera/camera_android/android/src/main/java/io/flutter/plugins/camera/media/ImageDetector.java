@@ -9,7 +9,10 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
+import org.opencv.core.MatOfFloat;
+import org.opencv.core.MatOfInt;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -201,5 +204,36 @@ public class ImageDetector {
         MatOfByte matOfByte = new MatOfByte();
         Imgcodecs.imencode(".jpg", mat, matOfByte);
         return matOfByte.toArray();
+    }
+
+    public static boolean isMostlyDarkImage(byte[] jpegBytes, double threshold) {
+        long startTime = System.currentTimeMillis();
+
+        Mat image = Imgcodecs.imdecode(new MatOfByte(jpegBytes), Imgcodecs.IMREAD_GRAYSCALE);
+        if (image.empty()) {
+            throw new IllegalArgumentException("Invalid JPEG image");
+        }
+
+        // Calculate histogram
+        Mat hist = new Mat();
+        Imgproc.calcHist(
+                java.util.Collections.singletonList(image),
+                new MatOfInt(0),
+                new Mat(),
+                hist,
+                new MatOfInt(256),
+                new MatOfFloat(0, 256)
+        );
+
+        // Calculate the proportion of dark pixels
+        int totalPixels = image.rows() * image.cols();
+        int darkPixels = 0;
+        for (int i = 0; i < 50; i++) { // Consider pixels with brightness < 50 as dark
+            darkPixels += hist.get(i, 0)[0];
+        }
+
+        double darkPixelRatio = (double) darkPixels / totalPixels;
+//        Log.d(TAG, "isMostlyDarkImage(" + darkPixelRatio + ") isDark: " + (darkPixelRatio >= threshold) + ": Execution time: " + (System.currentTimeMillis() - startTime) + " ms");
+        return darkPixelRatio >= threshold;
     }
 }

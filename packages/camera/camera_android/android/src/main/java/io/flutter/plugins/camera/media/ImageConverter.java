@@ -1,10 +1,14 @@
 package io.flutter.plugins.camera.media;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.media.Image;
+import android.util.Log;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -83,5 +87,34 @@ public class ImageConverter {
         }
         return new YuvImage(
                 nv21, ImageFormat.NV21, width, height, /* strides= */ null);
+    }
+
+    public static boolean isMostlyDarkImage(byte[] jpegBytes, double threshold) throws IOException {
+        long startTime = System.currentTimeMillis();
+
+        Bitmap bitmap = BitmapFactory.decodeByteArray(jpegBytes, 0, jpegBytes.length);
+        if (bitmap == null) {
+            throw new IllegalArgumentException("Invalid JPEG image");
+        }
+
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int totalPixels = width * height;
+        double totalBrightness = 0;
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int pixel = bitmap.getPixel(x, y);
+                int red = (pixel >> 16) & 0xFF;
+                int green = (pixel >> 8) & 0xFF;
+                int blue = pixel & 0xFF;
+                double brightness = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
+                totalBrightness += brightness;
+            }
+        }
+
+        double averageBrightness = totalBrightness / totalPixels;
+        Log.d("ImageConverter", "isMostlyBlackImage(" + averageBrightness + ") isDark: " + (averageBrightness >= threshold) + ", Execution time: " + (System.currentTimeMillis() - startTime) + " ms");
+        return averageBrightness < threshold;
     }
 }

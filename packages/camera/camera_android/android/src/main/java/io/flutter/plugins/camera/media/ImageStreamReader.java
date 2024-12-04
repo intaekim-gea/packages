@@ -97,7 +97,7 @@ public class ImageStreamReader {
 
 
   LocalDateTime lastCaptureDate;
-  int framesPerSecond = 30;
+  int framesPerSecond = 2;
   int jpegQuality = 80;
 
   @VisibleForTesting
@@ -120,13 +120,18 @@ public class ImageStreamReader {
 
       Map<String, Object> imageBuffer = new HashMap<>();
 
-//      byte[] jpegBytes = ImageConverter.convertToJpegBytes(image, jpegQuality);
-      ImageDetector.ImageDetectResult result = ImageDetector.processImage(image);
-      if (result == null) {
+      byte[] jpegBytes = ImageConverter.convertToJpegBytes(image, jpegQuality);
+
+      if (ImageDetector.isMostlyDarkImage(jpegBytes, 0.5)) {
         image.close();
         return;
       }
-      byte[] jpegBytes = result.jpegBytes;
+//      ImageDetector.ImageDetectResult result = ImageDetector.processImage(image);
+//      if (result == null) {
+//        image.close();
+//        return;
+//      }
+//      byte[] jpegBytes = result.jpegBytes;
 
       List<Map<String, Object>> planes = new ArrayList<>();
       Map<String, Object> planeBuffer = new HashMap<>();
@@ -140,7 +145,7 @@ public class ImageStreamReader {
       imageBuffer.put("height", image.getHeight());
       imageBuffer.put("format", ImageFormat.JPEG);
       imageBuffer.put("lensAperture", captureProps.getLastLensAperture());
-      imageBuffer.put("sensorExposureTime", result.activityType /*captureProps.getLastSensorExposureTime()*/);
+      imageBuffer.put("sensorExposureTime", captureProps.getLastSensorExposureTime());
       Integer sensorSensitivity = captureProps.getLastSensorSensitivity();
       imageBuffer.put("sensorSensitivity", sensorSensitivity == null ? null : (double) sensorSensitivity);
 
@@ -175,9 +180,9 @@ public class ImageStreamReader {
                   null));
       image.close();
     }
-//    catch (IOException e) {
-//      image.close();
-//    }
+    catch (IOException e) {
+      image.close();
+    }
   }
 
   /**
