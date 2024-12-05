@@ -176,7 +176,7 @@ public class CameraPropertiesImpl implements CameraProperties {
             .getOutputSizes(MediaRecorder.class);
 
     Arrays.sort(sizes, (lhs, rhs) -> rhs.getWidth()*rhs.getHeight() - lhs.getWidth()*lhs.getHeight());
-    return sizes.length == 0 ? null : sizes[0];
+    return sizes.length == 0 ? null : sizes[1];
   }
 
   @Override
@@ -185,6 +185,6 @@ public class CameraPropertiesImpl implements CameraProperties {
             .getOutputSizes(ImageFormat.JPEG);
 
     Arrays.sort(sizes, (lhs, rhs) -> rhs.getWidth()*rhs.getHeight() - lhs.getWidth()*lhs.getHeight());
-    return sizes.length == 0 ? null : sizes[0];
+    return sizes.length == 0 ? null : sizes[1];
   }
 }
